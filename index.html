@@ -1,95 +1,126 @@
-// script.js
-// Instructions:
-// - Add new game HTML files to the games/ folder.
-// - Copy games/game-template.html to create a new file (e.g., games/mygame.html).
-// - Then add a new object to the `games` array below with { id, title, file }.
-//   - id must be unique
-//   - file should be a relative path like "games/mygame.html"
-// - The hub will load the game HTML inside an iframe when you click Play.
-// - The UI does NOT display the file path or URL.
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Game Hub</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="topbar">
+      <div class="brand">Game Hub</div>
+      <input
+        id="search"
+        class="search"
+        type="search"
+        placeholder="Search games..."
+        aria-label="Search games"
+      />
+    </div>
 
-const games = [
-  {
-    id: "ttt",
-    title: "Tic Tac Toe (example)",
-    desc: "One-file Tic Tac Toe. Copy its format to create other games.",
-    file: "games/tictactoe.html"
-  },
-  {
-    id: "template",
-    title: "Game Template (copy this)",
-    desc: "A commented template you can copy for new games.",
-    file: "games/game-template.html"
-  }
-];
+    <main id="grid" class="grid" aria-live="polite"></main>
 
-// --- UI rendering ---
-const grid = document.getElementById('grid');
-const modal = document.getElementById('modal');
-const player = document.getElementById('player');
-const closeBtn = document.getElementById('closeBtn');
-const search = document.getElementById('search');
-
-function renderGames(list){
-  grid.innerHTML = '';
-  list.forEach(g=>{
-    const card = document.createElement('article');
-    card.className = 'card';
-    card.innerHTML = `<div>
-        <h3>${escapeHtml(g.title)}</h3>
-        <p>${escapeHtml(g.desc || '')}</p>
+    <div id="modal" class="modal" aria-hidden="true">
+      <div class="modal-content" role="dialog" aria-modal="true" aria-label="Game preview">
+        <button id="closeBtn" class="close" aria-label="Close game">×</button>
+        <div class="player-wrap">
+          <iframe id="player" title="Game preview" sandbox="allow-scripts allow-same-origin"></iframe>
+        </div>
       </div>
-      <div class="actions">
-        <button class="btn" data-file="${encodeURIComponent(g.file)}">Play</button>
-        <button class="btn secondary" onclick="openFolder('${encodeURIComponent(g.file)}')">Info</button>
-      </div>`;
-    grid.appendChild(card);
-  });
-  // attach listeners
-  document.querySelectorAll('.btn').forEach(btn=>{
-    btn.addEventListener('click', e=>{
-      const file = decodeURIComponent(btn.getAttribute('data-file') || '');
-      if(!file) return;
-      openModalWith(file);
-    });
-  });
-}
+    </div>
 
-function openFolder(fileEnc){
-  const file = decodeURIComponent(fileEnc);
-  // "Info" opens the template in the modal too; we purposely do not display the URL anywhere.
-  openModalWith(file);
-}
+    <p class="footer-note">Games are loaded locally in an embedded iframe.</p>
 
-function openModalWith(file){
-  player.src = file;
-  modal.setAttribute('aria-hidden','false');
-  // focus inside iframe when loaded
-}
+    <script>
+      const games = [
+        {
+          id: "ttt",
+          title: "Tic Tac Toe (example)",
+          desc: "One-file Tic Tac Toe. Copy its format to create other games.",
+          file: "games/tictactoe.html"
+        },
+        {
+          id: "template",
+          title: "Game Template (copy this)",
+          desc: "A commented template you can copy for new games.",
+          file: "games/game-template.html"
+        }
+      ];
 
-closeBtn.addEventListener('click', ()=>{
-  modal.setAttribute('aria-hidden','true');
-  player.src = 'about:blank';
-});
+      const grid = document.getElementById('grid');
+      const modal = document.getElementById('modal');
+      const player = document.getElementById('player');
+      const closeBtn = document.getElementById('closeBtn');
+      const search = document.getElementById('search');
 
-modal.addEventListener('click', (e)=>{
-  if(e.target === modal) {
-    closeBtn.click();
-  }
-});
+      function renderGames(list) {
+        grid.innerHTML = '';
 
-search.addEventListener('input', ()=>{
-  const q = search.value.trim().toLowerCase();
-  const filtered = games.filter(g => (g.title + ' ' + (g.desc||'')).toLowerCase().includes(q));
-  renderGames(filtered);
-});
+        list.forEach((game) => {
+          const card = document.createElement('article');
+          card.className = 'card';
+          card.innerHTML = `
+            <div>
+              <h3>${escapeHtml(game.title)}</h3>
+              <p>${escapeHtml(game.desc || '')}</p>
+            </div>
+            <div class="actions">
+              <button class="btn play-btn" data-file="${encodeURIComponent(game.file)}">Play</button>
+              <button class="btn secondary info-btn" data-file="${encodeURIComponent(game.file)}">Info</button>
+            </div>
+          `;
+          grid.appendChild(card);
+        });
+      }
 
-// initial render
-renderGames(games);
+      function openModalWith(file) {
+        if (!file) return;
+        player.src = file;
+        modal.setAttribute('aria-hidden', 'false');
+      }
 
-// tiny helper to avoid injection in titles/descriptions
-function escapeHtml(s){
-  return String(s || '').replace(/[&<>"']/g, (c)=> ({
-    '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
-  })[c]);
-}
+      closeBtn.addEventListener('click', () => {
+        modal.setAttribute('aria-hidden', 'true');
+        player.src = 'about:blank';
+      });
+
+      modal.addEventListener('click', (event) => {
+        if (event.target === modal) {
+          closeBtn.click();
+        }
+      });
+
+      document.addEventListener('click', (event) => {
+        const button = event.target.closest('.btn');
+        if (!button) return;
+
+        const file = decodeURIComponent(button.dataset.file || '');
+        if (!file) return;
+
+        openModalWith(file);
+      });
+
+      search.addEventListener('input', () => {
+        const query = search.value.trim().toLowerCase();
+        const filtered = games.filter((game) => {
+          const haystack = `${game.title} ${game.desc || ''}`.toLowerCase();
+          return haystack.includes(query);
+        });
+
+        renderGames(filtered);
+      });
+
+      function escapeHtml(value) {
+        return String(value ?? '').replace(/[&<>"']/g, (character) => ({
+          '&': '&amp;',
+          '<': '&lt;',
+          '>': '&gt;',
+          '"': '&quot;',
+          "'": '&#39;'
+        }[character]));
+      }
+
+      renderGames(games);
+    </script>
+  </body>
+</html>
