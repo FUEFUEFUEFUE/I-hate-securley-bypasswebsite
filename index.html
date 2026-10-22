@@ -24,138 +24,133 @@
       <div class="modal-content" role="dialog" aria-modal="true" aria-label="Game preview">
         <button id="closeBtn" class="close" aria-label="Close game">×</button>
         <div class="player-wrap">
-          <iframe id="player" title="Game preview" sandbox="allow-scripts allow-same-origin"></iframe>
+          <iframe
+            id="player"
+            title="Game preview"
+            sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-modals"
+          ></iframe>
         </div>
       </div>
     </div>
 
-    <p class="footer-note">Games are loaded locally in an embedded iframe.</p>
+    <p class="footer-note">Games are loaded locally in an embedded iframe. Serve the site over HTTP, not as a raw file.</p>
 
     <script>
-      const gameFiles = [
-        "games/games/game-template.html",
-        "games/tictactoe.html",
-        "games/clA Walk in The Forest (v1.0).html",
-        "games/clAcko_s Mach Bike Challenge (v1.0).html",
-        "games/clCeliasStupidROMHack.html",
-        "games/clHoennsLastWish.html",
-        "games/clInkwell (v1.04).html",
-        "games/clMoemon Emerald Vanilla+ (v1.1.0).html",
-        "games/clPokeAmbrosia.html",
-        "games/clPokeEmeraldRogueEX.html",
-        "games/clPokeFusion3.html",
-        "games/clPokemonemeraldrouge.html",
-        "games/clPokemonrocketedition.html",
-        "games/clPokémon TWO (v1.1).html",
-        "games/clPokémon Trade&Stache (V1.1).html",
-        "games/clPokémonstunningsteel.html",
-        "games/clarceuslegend.html",
-        "games/clfrlgips.html",
-        "games/clheartandsoul1.2.1.html",
-        "games/clinclementemerald.html",
-        "games/cllastfirered.html",
-        "games/clletsgoeevee.html",
-        "games/clletsgopikachu.html",
-        "games/clmoonemeraldextremerandomizer.html",
-        "games/cloopsalleevees.html",
-        "games/clpokeaestheticred.html",
-        "games/clpokeallin.html",
-        "games/clpokebattlefact.html",
-        "games/clpokeblue.html",
-        "games/clpokeclassic.html",
-        "games/clpokecrown.html",
-        "games/clpokecrystaladvanceredux.html",
-        "games/clpokecrystalclear.html",
-        "games/clpokecrystalinheritance.html",
-        "games/clpokecrystallegacy.html",
-        "games/clpokedreamstone.html",
-        "games/clpokeeliteredux.html",
-        "games/clpokeelysiuma.html",
-        "games/clpokeelysiumb.html",
-        "games/clpokeemerald47.html",
-        "games/clpokeemeraldbattlefrontier.html",
-        "games/clpokeemeraldenhanced.html",
-        "games/clpokeemeraldexceeded.html",
-        "games/clpokeemeraldextendedcut.html",
-        "games/clpokeemeraldflow.html",
-        "games/clpokeemeraldhorizons.html",
-        "games/clpokeemeraldimperium.html",
-        "games/clpokeemeraldlegacy.html",
-        "games/clpokeemeraldrandom.html",
-        "games/clpokeemeraldrto6.html",
-        "games/clpokeemeraldxtreme.html",
-        "games/clpokeemeraldz.html",
-        "games/clpokeexceeded.html",
-        "games/clpokefireemerald.html",
-        "games/clpokefiregold.html",
-        "games/clpokeflora.html",
-        "games/clpokefrlgplus.html",
-        "games/clpokefuseddimension.html",
-        "games/clpokegaia.html",
-        "games/clpokegigared.html",
-        "games/clpokeglazed.html",
-        "games/clpokegschronicles.html",
-        "games/clpokelightplatinum.html",
-        "games/clpokeliquidcrysta.html",
-        "games/clpokelowbudgetcrystal.html",
-        "games/clpokemegamoemon.html",
-        "games/clpokemonamnesia.html",
-        "games/clpokemonbillssecretgarden.html",
-        "games/clpokemonclover.html",
-        "games/clpokemoncrystal.html",
-        "games/clpokemonemerald.html",
-        "games/clpokemonemeraldcrest.html",
-        "games/clpokemonemeraldkaizo.html",
-        "games/clpokemonemeraldmini.html",
-        "games/clpokemonemeraldseaglass.html",
-        "games/clpokemonenergizedemerald.html",
-        "games/clpokemonevolvedsfdgsdfs.html",
-        "games/clpokemonfirered.html",
-        "games/clpokemonfireredrandomized.html",
-        "games/clpokemongold.html",
-        "games/clpokemonkaizoironfirered.html",
-        "games/clpokemonlazarus.html",
-        "games/clpokemonleafgreen.html",
-        "games/clpokemonmodernemerald.html",
-        "games/clpokemonmysterydungeon.html",
-        "games/clpokemonperfectemerald5.5.html",
-        "games/clpokemonpinball.html",
-        "games/clpokemonquetzal.html",
-        "games/clpokemonroaringred.html",
-        "games/clpokemonsaiph.html",
-        "games/clpokemonsaiph2.html",
-        "games/clpokemonsapphire.html",
-        "games/clpokemonshinsigma.html",
-        "games/clpokemonsilver.html",
-        "games/clpokemonslgreen.html",
-        "games/clpokemonsmred.html",
-        "games/clpokemonsors.html",
-        "games/clpokemonsors2.html",
-        "games/clpokemonultimatefusion.html",
-        "games/clpokemonunbound.html",
-        "games/clpokemoonemerald.html",
-        "games/clpokemoongalaxy.html"
-      ].sort((a, b) => a.localeCompare(b, undefined, { sensitivity: 'base' }));
+      const fallbackGames = [
+        { title: 'Game Template', file: 'games/games/game-template.html' },
+        { title: 'Tic Tac Toe', file: 'games/tictactoe.html' },
+        { title: 'A Walk in The Forest', file: 'games/clA Walk in The Forest (v1.0).html' },
+        { title: 'Acko_s Mach Bike Challenge', file: 'games/clAcko_s Mach Bike Challenge (v1.0).html' },
+        { title: 'Celias Stupid ROM Hack', file: 'games/clCeliasStupidROMHack.html' },
+        { title: 'Hoenns Last Wish', file: 'games/clHoennsLastWish.html' },
+        { title: 'Inkwell', file: 'games/clInkwell (v1.04).html' },
+        { title: 'Moemon Emerald Vanilla+', file: 'games/clMoemon Emerald Vanilla+ (v1.1.0).html' },
+        { title: 'Poke Ambrosia', file: 'games/clPokeAmbrosia.html' },
+        { title: 'Poke Emerald Rogue EX', file: 'games/clPokeEmeraldRogueEX.html' },
+        { title: 'Poke Fusion 3', file: 'games/clPokeFusion3.html' },
+        { title: 'Pokemon Emerald Rouge', file: 'games/clPokemonemeraldrouge.html' },
+        { title: 'Pokemon Rocket Edition', file: 'games/clPokemonrocketedition.html' },
+        { title: 'Pokémon TWO', file: 'games/clPokémon TWO (v1.1).html' },
+        { title: 'Pokémon Trade & Stache', file: 'games/clPokémon Trade&Stache (V1.1).html' },
+        { title: 'Pokémon Stunning Steel', file: 'games/clPokémonstunningsteel.html' },
+        { title: 'Arceus Legend', file: 'games/clarceuslegend.html' },
+        { title: 'FRLG IPS', file: 'games/clfrlgips.html' },
+        { title: 'Heart and Soul', file: 'games/clheartandsoul1.2.1.html' },
+        { title: 'Inclement Emerald', file: 'games/clinclementemerald.html' },
+        { title: 'Last Fire Red', file: 'games/cllastfirered.html' },
+        { title: 'Lets Go Eevee', file: 'games/clletsgoeevee.html' },
+        { title: 'Lets Go Pikachu', file: 'games/clletsgopikachu.html' },
+        { title: 'Moon Emerald Extreme Randomizer', file: 'games/clmoonemeraldextremerandomizer.html' },
+        { title: 'Oops All Eevees', file: 'games/cloopsalleevees.html' },
+        { title: 'Pokemon Aesthetic Red', file: 'games/clpokeaestheticred.html' },
+        { title: 'Pokemon All In', file: 'games/clpokeallin.html' },
+        { title: 'Pokemon Battle Fact', file: 'games/clpokebattlefact.html' },
+        { title: 'Pokemon Blue', file: 'games/clpokeblue.html' },
+        { title: 'Pokemon Classic', file: 'games/clpokeclassic.html' },
+        { title: 'Pokemon Crown', file: 'games/clpokecrown.html' },
+        { title: 'Pokemon Crystal Advance Redux', file: 'games/clpokecrystaladvanceredux.html' },
+        { title: 'Pokemon Crystal Clear', file: 'games/clpokecrystalclear.html' },
+        { title: 'Pokemon Crystal Inheritance', file: 'games/clpokecrystalinheritance.html' },
+        { title: 'Pokemon Crystal Legacy', file: 'games/clpokecrystallegacy.html' },
+        { title: 'Pokemon Dreamstone', file: 'games/clpokedreamstone.html' },
+        { title: 'Pokemon Elite Redux', file: 'games/clpokeeliteredux.html' },
+        { title: 'Pokemon Elysium A', file: 'games/clpokeelysiuma.html' },
+        { title: 'Pokemon Elysium B', file: 'games/clpokeelysiumb.html' },
+        { title: 'Pokemon Emerald 47', file: 'games/clpokeemerald47.html' },
+        { title: 'Pokemon Emerald Battle Frontier', file: 'games/clpokeemeraldbattlefrontier.html' },
+        { title: 'Pokemon Emerald Enhanced', file: 'games/clpokeemeraldenhanced.html' },
+        { title: 'Pokemon Emerald Exceeded', file: 'games/clpokeemeraldexceeded.html' },
+        { title: 'Pokemon Emerald Extended Cut', file: 'games/clpokeemeraldextendedcut.html' },
+        { title: 'Pokemon Emerald Flow', file: 'games/clpokeemeraldflow.html' },
+        { title: 'Pokemon Emerald Horizons', file: 'games/clpokeemeraldhorizons.html' },
+        { title: 'Pokemon Emerald Imperium', file: 'games/clpokeemeraldimperium.html' },
+        { title: 'Pokemon Emerald Legacy', file: 'games/clpokeemeraldlegacy.html' },
+        { title: 'Pokemon Emerald Random', file: 'games/clpokeemeraldrandom.html' },
+        { title: 'Pokemon Emerald RTO6', file: 'games/clpokeemeraldrto6.html' },
+        { title: 'Pokemon Emerald Xtreme', file: 'games/clpokeemeraldxtreme.html' },
+        { title: 'Pokemon Emerald Z', file: 'games/clpokeemeraldz.html' },
+        { title: 'Pokemon Exceeded', file: 'games/clpokeexceeded.html' },
+        { title: 'Pokemon Fire Emerald', file: 'games/clpokefireemerald.html' },
+        { title: 'Pokemon Fire Gold', file: 'games/clpokefiregold.html' },
+        { title: 'Pokemon Flora', file: 'games/clpokeflora.html' },
+        { title: 'Pokemon FRLG Plus', file: 'games/clpokefrlgplus.html' },
+        { title: 'Pokemon Fused Dimension', file: 'games/clpokefuseddimension.html' },
+        { title: 'Pokemon Gaia', file: 'games/clpokegaia.html' },
+        { title: 'Pokemon Gigared', file: 'games/clpokegigared.html' },
+        { title: 'Pokemon Glazed', file: 'games/clpokeglazed.html' },
+        { title: 'Pokemon GS Chronicles', file: 'games/clpokegschronicles.html' },
+        { title: 'Pokemon Light Platinum', file: 'games/clpokelightplatinum.html' },
+        { title: 'Pokemon Liquid Crysta', file: 'games/clpokeliquidcrysta.html' },
+        { title: 'Pokemon Low Budget Crystal', file: 'games/clpokelowbudgetcrystal.html' },
+        { title: 'Pokemon Mega Moemon', file: 'games/clpokemegamoemon.html' },
+        { title: 'Pokemon Amnesia', file: 'games/clpokemonamnesia.html' },
+        { title: 'Pokemon Bills Secret Garden', file: 'games/clpokemonbillssecretgarden.html' },
+        { title: 'Pokemon Clover', file: 'games/clpokemonclover.html' },
+        { title: 'Pokemon Crystal', file: 'games/clpokemoncrystal.html' },
+        { title: 'Pokemon Emerald', file: 'games/clpokemonemerald.html' },
+        { title: 'Pokemon Emerald Crest', file: 'games/clpokemonemeraldcrest.html' },
+        { title: 'Pokemon Emerald Kaizo', file: 'games/clpokemonemeraldkaizo.html' },
+        { title: 'Pokemon Emerald Mini', file: 'games/clpokemonemeraldmini.html' },
+        { title: 'Pokemon Emerald Seaglass', file: 'games/clpokemonemeraldseaglass.html' },
+        { title: 'Pokemon Energized Emerald', file: 'games/clpokemonenergizedemerald.html' },
+        { title: 'Pokemon Evolved', file: 'games/clpokemonevolvedsfdgsdfs.html' },
+        { title: 'Pokemon Fire Red', file: 'games/clpokemonfirered.html' },
+        { title: 'Pokemon Fire Red Randomized', file: 'games/clpokemonfireredrandomized.html' },
+        { title: 'Pokemon Gold', file: 'games/clpokemongold.html' },
+        { title: 'Pokemon Kaizo Iron Fire Red', file: 'games/clpokemonkaizoironfirered.html' },
+        { title: 'Pokemon Lazarus', file: 'games/clpokemonlazarus.html' },
+        { title: 'Pokemon Leaf Green', file: 'games/clpokemonleafgreen.html' },
+        { title: 'Pokemon Modern Emerald', file: 'games/clpokemonmodernemerald.html' },
+        { title: 'Pokemon Mystery Dungeon', file: 'games/clpokemonmysterydungeon.html' },
+        { title: 'Pokemon Perfect Emerald', file: 'games/clpokemonperfectemerald5.5.html' },
+        { title: 'Pokemon Pinball', file: 'games/clpokemonpinball.html' },
+        { title: 'Pokemon Quetzal', file: 'games/clpokemonquetzal.html' },
+        { title: 'Pokemon Roaring Red', file: 'games/clpokemonroaringred.html' },
+        { title: 'Pokemon Saiph', file: 'games/clpokemonsaiph.html' },
+        { title: 'Pokemon Saiph 2', file: 'games/clpokemonsaiph2.html' },
+        { title: 'Pokemon Sapphire', file: 'games/clpokemonsapphire.html' },
+        { title: 'Pokemon Shin Sigma', file: 'games/clpokemonshinsigma.html' },
+        { title: 'Pokemon Silver', file: 'games/clpokemonsilver.html' },
+        { title: 'Pokemon SL Green', file: 'games/clpokemonslgreen.html' },
+        { title: 'Pokemon SM Red', file: 'games/clpokemonsmred.html' },
+        { title: 'Pokemon SORS', file: 'games/clpokemonsors.html' },
+        { title: 'Pokemon SORS 2', file: 'games/clpokemonsors2.html' },
+        { title: 'Pokemon Ultimate Fusion', file: 'games/clpokemonultimatefusion.html' },
+        { title: 'Pokemon Unbound', file: 'games/clpokemonunbound.html' },
+        { title: 'Pokemon Moon Emerald', file: 'games/clpokemoonemerald.html' },
+        { title: 'Pokemon Moon Galaxy', file: 'games/clpokemoongalaxy.html' }
+      ];
 
-      function formatGameTitle(file) {
-        const raw = decodeURIComponent(file.split('/').pop().replace(/\.html?$/i, ''));
-        if (raw === 'game-template') return 'Game Template';
-
-        const cleaned = raw.replace(/^cl/i, '').trim();
-        return cleaned
-          .replace(/([a-z])([A-Z])/g, '$1 $2')
-          .replace(/([A-Z]+)([A-Z][a-z])/g, '$1 $2')
-          .replace(/[_-]+/g, ' ')
-          .replace(/\s+/g, ' ')
-          .trim() || 'Untitled Game';
-      }
-
-      const games = gameFiles.map((file, index) => ({
-        id: `${index}-${file.replace(/[^a-z0-9]+/gi, '-').replace(/^-|-$/g, '').toLowerCase()}`,
-        title: formatGameTitle(file),
-        desc: 'Loaded from the games folder.',
-        file
-      }));
+      const normalizeGame = (game) => {
+        const file = typeof game.file === 'string' ? game.file : game.path || '';
+        const title = game.title || file.split('/').pop().replace(/\.html?$/i, '').replace(/^cl/i, '').trim() || 'Untitled Game';
+        return {
+          id: String(game.id || `${title}-${file}`),
+          title,
+          desc: game.desc || 'Loaded from the games folder.',
+          file
+        };
+      };
 
       const grid = document.getElementById('grid');
       const modal = document.getElementById('modal');
@@ -163,13 +158,16 @@
       const closeBtn = document.getElementById('closeBtn');
       const search = document.getElementById('search');
 
-      function isGameScreenActive() {
-        return modal.getAttribute('aria-hidden') === 'false' && player.src && player.src !== 'about:blank';
-      }
+      let games = [];
 
-      function confirmLeaveScreen() {
-        if (!isGameScreenActive()) return true;
-        return window.confirm('You are leaving the current game screen. Do you want to continue?');
+      function escapeHtml(value) {
+        return String(value ?? '').replace(/[&<>\"']/g, (character) => ({
+          '&': '&amp;',
+          '<': '&lt;',
+          '>': '&gt;',
+          '"': '&quot;',
+          "'": '&#39;'
+        }[character]));
       }
 
       function renderGames(list) {
@@ -190,6 +188,15 @@
           `;
           grid.appendChild(card);
         });
+      }
+
+      function isGameScreenActive() {
+        return modal.getAttribute('aria-hidden') === 'false' && player.src && player.src !== 'about:blank';
+      }
+
+      function confirmLeaveScreen() {
+        if (!isGameScreenActive()) return true;
+        return window.confirm('You are leaving the current game screen. Do you want to continue?');
       }
 
       function openModalWith(file) {
@@ -241,17 +248,27 @@
         renderGames(filtered);
       });
 
-      function escapeHtml(value) {
-        return String(value ?? '').replace(/[&<>"']/g, (character) => ({
-          '&': '&amp;',
-          '<': '&lt;',
-          '>': '&gt;',
-          '"': '&quot;',
-          "'": '&#39;'
-        }[character]));
+      async function loadGames() {
+        try {
+          const response = await fetch('games.json', { cache: 'no-store' });
+          if (!response.ok) throw new Error('Manifest not found');
+          const payload = await response.json();
+          const manifest = Array.isArray(payload) ? payload : Array.isArray(payload.games) ? payload.games : [];
+          games = manifest.map(normalizeGame);
+        } catch (error) {
+          games = fallbackGames.map(normalizeGame);
+        }
+
+        if (!games.length) {
+          games = fallbackGames.map(normalizeGame);
+        }
+
+        games.sort((a, b) => a.title.localeCompare(b.title, undefined, { sensitivity: 'base' }));
+        renderGames(games);
       }
 
-      renderGames(games);
+      loadGames();
     </script>
   </body>
 </html>
+
