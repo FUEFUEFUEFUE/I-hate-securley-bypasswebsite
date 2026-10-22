@@ -11,6 +11,7 @@ from __future__ import annotations
 
 import re
 import shutil
+import urllib.parse
 import urllib.request
 from pathlib import Path
 
@@ -20,6 +21,15 @@ ROMS_DIR = GAMES_DIR / "roms"
 ROMS_DIR.mkdir(parents=True, exist_ok=True)
 
 URL_PATTERN = re.compile(r'EJS_gameUrl\s*=\s*["\'](https?://[^"\']+)["\']')
+
+
+def normalize_url(url: str) -> str:
+    """Percent-encode unsafe characters in the URL path/query while preserving the scheme/host."""
+    parts = urllib.parse.urlsplit(url)
+    path = urllib.parse.quote(parts.path, safe="/%")
+    query = urllib.parse.quote(parts.query, safe="=&?/%")
+    fragment = urllib.parse.quote(parts.fragment, safe="=&?/%")
+    return urllib.parse.urlunsplit((parts.scheme, parts.netloc, path, query, fragment))
 
 
 def download(url: str, destination: Path) -> None:
@@ -32,7 +42,7 @@ def download(url: str, destination: Path) -> None:
 
 
 def safe_name(url: str) -> str:
-    name = url.split("/")[-1]
+    name = urllib.parse.unquote(url).split("/")[-1]
     safe = re.sub(r"[^A-Za-z0-9._-]+", "_", name) or "game.gba"
     if not safe.lower().endswith(".gba"):
         safe = f"{safe}.gba"
@@ -46,12 +56,12 @@ for html_file in sorted(GAMES_DIR.glob("*.html")):
     if not match:
         continue
 
-    url = match.group(1)
+    url = normalize_url(match.group(1))
     local_name = safe_name(url)
     rom_path = ROMS_DIR / local_name
     download(url, rom_path)
 
-    rewritten = text.replace(url, f"./roms/{local_name}")
+    rewritten = text.replace(match.group(1), f"./roms/{local_name}")
     if rewritten != text:
         html_file.write_text(rewritten, encoding="utf-8")
         count += 1
