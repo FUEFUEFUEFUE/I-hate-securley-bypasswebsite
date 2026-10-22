@@ -154,6 +154,26 @@
         };
       };
 
+      const collectManifestItems = (payload) => {
+        if (Array.isArray(payload)) {
+          return payload;
+        }
+
+        if (Array.isArray(payload?.games)) {
+          return payload.games;
+        }
+
+        if (Array.isArray(payload?.items)) {
+          return payload.items;
+        }
+
+        if (Array.isArray(payload?.sections)) {
+          return payload.sections.flatMap((section) => collectManifestItems(section));
+        }
+
+        return [];
+      };
+
       const grid = document.getElementById('grid');
       const modal = document.getElementById('modal');
       const player = document.getElementById('player');
@@ -163,7 +183,7 @@
       let games = [];
 
       function escapeHtml(value) {
-        return String(value ?? '').replace(/[&<>\"']/g, (character) => ({
+        return String(value ?? '').replace(/[&<>"']/g, (character) => ({
           '&': '&amp;',
           '<': '&lt;',
           '>': '&gt;',
@@ -267,9 +287,10 @@
         try {
           const response = await fetch('games.json', { cache: 'no-store' });
           if (!response.ok) throw new Error('Manifest not found');
+
           const payload = await response.json();
-          const manifest = Array.isArray(payload) ? payload : Array.isArray(payload.games) ? payload.games : [];
-          games = manifest.map(normalizeGame);
+          const manifest = collectManifestItems(payload);
+          games = manifest.length ? manifest.map(normalizeGame) : fallbackGames.map(normalizeGame);
         } catch (error) {
           games = fallbackGames.map(normalizeGame);
         }
