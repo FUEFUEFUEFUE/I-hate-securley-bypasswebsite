@@ -296,11 +296,21 @@
           games = fallbackGames.map(normalizeGame);
         }
 
+        const commonsenseHealthcare = normalizeGame({
+          title: 'Commonsense Healthcare',
+          file: 'https://commonsensehealthcare.org/',
+          desc: 'Embedded healthcare information site.'
+        });
+
         const azaharWeb = normalizeGame({
           title: 'Azahar Web',
           file: 'https://somerandomfella.github.io/Azahar-Web/',
           desc: 'Play Azahar Web directly inside this portal.'
         });
+
+        if (!games.some((game) => game.title.toLowerCase() === commonsenseHealthcare.title.toLowerCase())) {
+          games.push(commonsenseHealthcare);
+        }
 
         if (!games.some((game) => game.title.toLowerCase() === azaharWeb.title.toLowerCase())) {
           games.push(azaharWeb);
