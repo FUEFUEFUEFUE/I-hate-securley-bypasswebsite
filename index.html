@@ -163,6 +163,15 @@
       const closeBtn = document.getElementById('closeBtn');
       const search = document.getElementById('search');
 
+      function isGameScreenActive() {
+        return modal.getAttribute('aria-hidden') === 'false' && player.src && player.src !== 'about:blank';
+      }
+
+      function confirmLeaveScreen() {
+        if (!isGameScreenActive()) return true;
+        return window.confirm('You are leaving the current game screen. Do you want to continue?');
+      }
+
       function renderGames(list) {
         grid.innerHTML = '';
 
@@ -185,11 +194,23 @@
 
       function openModalWith(file) {
         if (!file) return;
+
+        const target = new URL(file, window.location.href).toString();
+        const current = player.src ? new URL(player.src, window.location.href).toString() : '';
+
+        if (current && current !== target && !confirmLeaveScreen()) {
+          return;
+        }
+
         player.src = file;
         modal.setAttribute('aria-hidden', 'false');
       }
 
       closeBtn.addEventListener('click', () => {
+        if (!confirmLeaveScreen()) {
+          return;
+        }
+
         modal.setAttribute('aria-hidden', 'true');
         player.src = 'about:blank';
       });
