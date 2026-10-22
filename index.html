@@ -27,7 +27,7 @@
           <iframe
             id="player"
             title="Game preview"
-            sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-modals"
+            sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-modals allow-popups-to-escape-sandbox"
           ></iframe>
         </div>
       </div>
@@ -38,7 +38,7 @@
     <script>
       const fallbackGames = [
         { title: 'Pokemon Showdown', file: 'https://play.pokemonshowdown.com/', desc: 'Pokémon battle simulator.' },
-        { title: 'Azahar Web', file: 'https://azahar-emu.org/', desc: 'Play compatible 3DS games in the browser with Azahar Web.' },
+        { title: 'Azahar Web', file: 'https://somerandomfella.github.io/Azahar-Web/', desc: 'Play Azahar Web directly inside this portal.' },
         { title: 'Game Template', file: 'games/games/game-template.html' },
         { title: 'Tic Tac Toe', file: 'games/tictactoe.html' },
         { title: 'A Walk in The Forest', file: 'games/clA Walk in The Forest (v1.0).html' },
@@ -205,7 +205,15 @@
         if (!file) return;
 
         if (/^https?:\/\//i.test(file)) {
-          window.open(file, '_blank', 'noopener,noreferrer');
+          const target = new URL(file, window.location.href).toString();
+          const current = player.src ? new URL(player.src, window.location.href).toString() : '';
+
+          if (current && current !== target && !confirmLeaveScreen()) {
+            return;
+          }
+
+          player.src = file;
+          modal.setAttribute('aria-hidden', 'false');
           return;
         }
 
@@ -268,8 +276,8 @@
 
         const azaharWeb = normalizeGame({
           title: 'Azahar Web',
-          file: 'https://azahar-emu.org/',
-          desc: 'Play compatible 3DS games in the browser with Azahar Web.'
+          file: 'https://somerandomfella.github.io/Azahar-Web/',
+          desc: 'Play Azahar Web directly inside this portal.'
         });
 
         if (!games.some((game) => game.title.toLowerCase() === azaharWeb.title.toLowerCase())) {
