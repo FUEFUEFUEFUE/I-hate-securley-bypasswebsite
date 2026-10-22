@@ -29,23 +29,133 @@
       </div>
     </div>
 
-    <p class="footer-note">Showing only local games. Network-dependent ROM/emulator games have been hidden.</p>
+    <p class="footer-note">Games are loaded locally in an embedded iframe.</p>
 
     <script>
-      const games = [
-        {
-          id: 'ttt',
-          title: 'Tic Tac Toe',
-          desc: 'A local single-file browser game.',
-          file: 'games/tictactoe.html'
-        },
-        {
-          id: 'template',
-          title: 'Game Template',
-          desc: 'Copy this template to build your own local game.',
-          file: 'games/games/game-template.html'
-        }
-      ];
+      const gameFiles = [
+        "games/games/game-template.html",
+        "games/tictactoe.html",
+        "games/clA Walk in The Forest (v1.0).html",
+        "games/clAcko_s Mach Bike Challenge (v1.0).html",
+        "games/clCeliasStupidROMHack.html",
+        "games/clHoennsLastWish.html",
+        "games/clInkwell (v1.04).html",
+        "games/clMoemon Emerald Vanilla+ (v1.1.0).html",
+        "games/clPokeAmbrosia.html",
+        "games/clPokeEmeraldRogueEX.html",
+        "games/clPokeFusion3.html",
+        "games/clPokemonemeraldrouge.html",
+        "games/clPokemonrocketedition.html",
+        "games/clPokémon TWO (v1.1).html",
+        "games/clPokémon Trade&Stache (V1.1).html",
+        "games/clPokémonstunningsteel.html",
+        "games/clarceuslegend.html",
+        "games/clfrlgips.html",
+        "games/clheartandsoul1.2.1.html",
+        "games/clinclementemerald.html",
+        "games/cllastfirered.html",
+        "games/clletsgoeevee.html",
+        "games/clletsgopikachu.html",
+        "games/clmoonemeraldextremerandomizer.html",
+        "games/cloopsalleevees.html",
+        "games/clpokeaestheticred.html",
+        "games/clpokeallin.html",
+        "games/clpokebattlefact.html",
+        "games/clpokeblue.html",
+        "games/clpokeclassic.html",
+        "games/clpokecrown.html",
+        "games/clpokecrystaladvanceredux.html",
+        "games/clpokecrystalclear.html",
+        "games/clpokecrystalinheritance.html",
+        "games/clpokecrystallegacy.html",
+        "games/clpokedreamstone.html",
+        "games/clpokeeliteredux.html",
+        "games/clpokeelysiuma.html",
+        "games/clpokeelysiumb.html",
+        "games/clpokeemerald47.html",
+        "games/clpokeemeraldbattlefrontier.html",
+        "games/clpokeemeraldenhanced.html",
+        "games/clpokeemeraldexceeded.html",
+        "games/clpokeemeraldextendedcut.html",
+        "games/clpokeemeraldflow.html",
+        "games/clpokeemeraldhorizons.html",
+        "games/clpokeemeraldimperium.html",
+        "games/clpokeemeraldlegacy.html",
+        "games/clpokeemeraldrandom.html",
+        "games/clpokeemeraldrto6.html",
+        "games/clpokeemeraldxtreme.html",
+        "games/clpokeemeraldz.html",
+        "games/clpokeexceeded.html",
+        "games/clpokefireemerald.html",
+        "games/clpokefiregold.html",
+        "games/clpokeflora.html",
+        "games/clpokefrlgplus.html",
+        "games/clpokefuseddimension.html",
+        "games/clpokegaia.html",
+        "games/clpokegigared.html",
+        "games/clpokeglazed.html",
+        "games/clpokegschronicles.html",
+        "games/clpokelightplatinum.html",
+        "games/clpokeliquidcrysta.html",
+        "games/clpokelowbudgetcrystal.html",
+        "games/clpokemegamoemon.html",
+        "games/clpokemonamnesia.html",
+        "games/clpokemonbillssecretgarden.html",
+        "games/clpokemonclover.html",
+        "games/clpokemoncrystal.html",
+        "games/clpokemonemerald.html",
+        "games/clpokemonemeraldcrest.html",
+        "games/clpokemonemeraldkaizo.html",
+        "games/clpokemonemeraldmini.html",
+        "games/clpokemonemeraldseaglass.html",
+        "games/clpokemonenergizedemerald.html",
+        "games/clpokemonevolvedsfdgsdfs.html",
+        "games/clpokemonfirered.html",
+        "games/clpokemonfireredrandomized.html",
+        "games/clpokemongold.html",
+        "games/clpokemonkaizoironfirered.html",
+        "games/clpokemonlazarus.html",
+        "games/clpokemonleafgreen.html",
+        "games/clpokemonmodernemerald.html",
+        "games/clpokemonmysterydungeon.html",
+        "games/clpokemonperfectemerald5.5.html",
+        "games/clpokemonpinball.html",
+        "games/clpokemonquetzal.html",
+        "games/clpokemonroaringred.html",
+        "games/clpokemonsaiph.html",
+        "games/clpokemonsaiph2.html",
+        "games/clpokemonsapphire.html",
+        "games/clpokemonshinsigma.html",
+        "games/clpokemonsilver.html",
+        "games/clpokemonslgreen.html",
+        "games/clpokemonsmred.html",
+        "games/clpokemonsors.html",
+        "games/clpokemonsors2.html",
+        "games/clpokemonultimatefusion.html",
+        "games/clpokemonunbound.html",
+        "games/clpokemoonemerald.html",
+        "games/clpokemoongalaxy.html"
+      ].sort((a, b) => a.localeCompare(b, undefined, { sensitivity: 'base' }));
+
+      function formatGameTitle(file) {
+        const raw = decodeURIComponent(file.split('/').pop().replace(/\.html?$/i, ''));
+        if (raw === 'game-template') return 'Game Template';
+
+        const cleaned = raw.replace(/^cl/i, '').trim();
+        return cleaned
+          .replace(/([a-z])([A-Z])/g, '$1 $2')
+          .replace(/([A-Z]+)([A-Z][a-z])/g, '$1 $2')
+          .replace(/[_-]+/g, ' ')
+          .replace(/\s+/g, ' ')
+          .trim() || 'Untitled Game';
+      }
+
+      const games = gameFiles.map((file, index) => ({
+        id: `${index}-${file.replace(/[^a-z0-9]+/gi, '-').replace(/^-|-$/g, '').toLowerCase()}`,
+        title: formatGameTitle(file),
+        desc: 'Loaded from the games folder.',
+        file
+      }));
 
       const grid = document.getElementById('grid');
       const modal = document.getElementById('modal');
@@ -85,7 +195,10 @@
       function openModalWith(file) {
         if (!file) return;
 
-        if (isGameScreenActive() && !confirmLeaveScreen()) {
+        const target = new URL(file, window.location.href).toString();
+        const current = player.src ? new URL(player.src, window.location.href).toString() : '';
+
+        if (current && current !== target && !confirmLeaveScreen()) {
           return;
         }
 
