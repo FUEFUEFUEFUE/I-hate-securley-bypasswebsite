@@ -38,6 +38,7 @@
     <script>
       const fallbackGames = [
         { title: 'Pokemon Showdown', file: 'https://play.pokemonshowdown.com/', desc: 'Pokémon battle simulator.' },
+        { title: 'Azahar Web', file: 'https://azahar-emu.org/', desc: 'Play compatible 3DS games in the browser with Azahar Web.' },
         { title: 'Game Template', file: 'games/games/game-template.html' },
         { title: 'Tic Tac Toe', file: 'games/tictactoe.html' },
         { title: 'A Walk in The Forest', file: 'games/clA Walk in The Forest (v1.0).html' },
@@ -263,6 +264,16 @@
           games = manifest.map(normalizeGame);
         } catch (error) {
           games = fallbackGames.map(normalizeGame);
+        }
+
+        const azaharWeb = normalizeGame({
+          title: 'Azahar Web',
+          file: 'https://azahar-emu.org/',
+          desc: 'Play compatible 3DS games in the browser with Azahar Web.'
+        });
+
+        if (!games.some((game) => game.title.toLowerCase() === azaharWeb.title.toLowerCase())) {
+          games.push(azaharWeb);
         }
 
         if (!games.length) {
