@@ -1,31 +1,69 @@
-name: Download ROMs
+#!/usr/bin/env python3
+"""
+Download each game's GBA ROM into `games/roms/` and rewrite the HTML wrapper
+so the page loads the local file instead of a remote CDN URL.
 
-on:
-  workflow_dispatch:
+Usage:
+    python extract_gba_roms.py
+"""
 
-permissions:
-  contents: write
+from __future__ import annotations
 
-jobs:
-  download:
-    runs-on: ubuntu-latest
+import re
+import shutil
+import urllib.parse
+import urllib.request
+from pathlib import Path
 
-    steps:
-      - name: Checkout repo
-        uses: actions/checkout@v4
+ROOT = Path(__file__).resolve().parent
+GAMES_DIR = ROOT / "games"
+ROMS_DIR = GAMES_DIR / "roms"
+ROMS_DIR.mkdir(parents=True, exist_ok=True)
 
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: "3.12"
+URL_PATTERN = re.compile(r'EJS_gameUrl\s*=\s*["\'](https?://[^"\']+)["\']')
 
-      - name: Run downloader
-        run: python extract_gba_roms.py
 
-      - name: Commit changes
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add games/roms
-          git diff --cached --quiet || git commit -m "Download ROMs"
-          git push
+def normalize_url(url: str) -> str:
+    """Percent-encode unsafe characters in the URL path/query while preserving the scheme/host."""
+    parts = urllib.parse.urlsplit(url)
+    path = urllib.parse.quote(parts.path, safe="/%")
+    query = urllib.parse.quote(parts.query, safe="=&?/%")
+    fragment = urllib.parse.quote(parts.fragment, safe="=&?/%")
+    return urllib.parse.urlunsplit((parts.scheme, parts.netloc, path, query, fragment))
+
+
+def download(url: str, destination: Path) -> None:
+    if destination.exists():
+        return
+
+    req = urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0"})
+    with urllib.request.urlopen(req, timeout=60) as response, destination.open("wb") as out_file:
+        shutil.copyfileobj(response, out_file)
+
+
+def safe_name(url: str) -> str:
+    name = urllib.parse.unquote(url).split("/")[-1]
+    safe = re.sub(r"[^A-Za-z0-9._-]+", "_", name) or "game.gba"
+    if not safe.lower().endswith(".gba"):
+        safe = f"{safe}.gba"
+    return safe
+
+
+count = 0
+for html_file in sorted(GAMES_DIR.glob("*.html")):
+    text = html_file.read_text(encoding="utf-8", errors="replace")
+    match = URL_PATTERN.search(text)
+    if not match:
+        continue
+
+    url = normalize_url(match.group(1))
+    local_name = safe_name(url)
+    rom_path = ROMS_DIR / local_name
+    download(url, rom_path)
+
+    rewritten = text.replace(match.group(1), f"./roms/{local_name}")
+    if rewritten != text:
+        html_file.write_text(rewritten, encoding="utf-8")
+        count += 1
+
+print(f"Updated {count} game files to use local ROMs in {ROMS_DIR}")
