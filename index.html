@@ -37,6 +37,7 @@
 
     <script>
       const fallbackGames = [
+        { title: 'Pokemon Showdown', file: 'https://play.pokemonshowdown.com/', desc: 'Pokémon battle simulator.' },
         { title: 'Game Template', file: 'games/games/game-template.html' },
         { title: 'Tic Tac Toe', file: 'games/tictactoe.html' },
         { title: 'A Walk in The Forest', file: 'games/clA Walk in The Forest (v1.0).html' },
@@ -202,6 +203,11 @@
       function openModalWith(file) {
         if (!file) return;
 
+        if (/^https?:\/\//i.test(file)) {
+          window.open(file, '_blank', 'noopener,noreferrer');
+          return;
+        }
+
         const target = new URL(file, window.location.href).toString();
         const current = player.src ? new URL(player.src, window.location.href).toString() : '';
 
@@ -271,4 +277,3 @@
     </script>
   </body>
 </html>
-
