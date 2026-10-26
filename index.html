@@ -141,7 +141,13 @@
         { title: 'Pokemon Ultimate Fusion', file: 'games/clpokemonultimatefusion.html' },
         { title: 'Pokemon Unbound', file: 'games/clpokemonunbound.html' },
         { title: 'Pokemon Moon Emerald', file: 'games/clpokemoonemerald.html' },
-        { title: 'Pokemon Moon Galaxy', file: 'games/clpokemoongalaxy.html' }
+        { title: 'Pokemon Moon Galaxy', file: 'games/clpokemoongalaxy.html' },
+        { title: 'Pokemon Nameless', file: 'games/clpokenameless.html' },
+        { title: 'Lime', file: 'games/lime.html', desc: 'Play Lime in this portal.' },
+        { title: 'Lucid', file: 'games/lucid.html', desc: 'Play Lucid in this portal.' },
+        { title: 'Peach', file: 'games/peach.html', desc: 'Play Peach in this portal.' },
+        { title: 'Snow White', file: 'games/snowwhite.html', desc: 'Play Snow White in this portal.' },
+        { title: 'Unown King', file: 'games/unownking.html', desc: 'Play Unown King in this portal.' }
       ];
 
       const normalizeGame = (game) => {
@@ -308,6 +314,11 @@
           desc: 'Play Azahar Web directly inside this portal.'
         });
 
+        const extraGameEntries = fallbackGames.filter((game) => {
+          const title = (game.title || '').trim();
+          return ['Lime', 'Lucid', 'Peach', 'Snow White', 'Unown King'].includes(title);
+        }).map(normalizeGame);
+
         if (!games.some((game) => game.title.toLowerCase() === commonsenseHealthcare.title.toLowerCase())) {
           games.push(commonsenseHealthcare);
         }
@@ -315,6 +326,12 @@
         if (!games.some((game) => game.title.toLowerCase() === azaharWeb.title.toLowerCase())) {
           games.push(azaharWeb);
         }
+
+        extraGameEntries.forEach((game) => {
+          if (!games.some((existing) => existing.title.toLowerCase() === game.title.toLowerCase())) {
+            games.push(game);
+          }
+        });
 
         if (!games.length) {
           games = fallbackGames.map(normalizeGame);
